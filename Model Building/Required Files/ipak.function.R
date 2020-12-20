@@ -1,8 +1,6 @@
 ## Create function that installs and loads the required packages 
 ## as specified in character vector (required.packages)
 
-
-
 ipak <- function(required.packages){
   required.packages <- c(required.packages,"BiocManager")
   missing.packages <- required.packages[!(required.packages %in% installed.packages()[,"Package"])]

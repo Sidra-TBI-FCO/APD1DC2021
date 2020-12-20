@@ -1,4 +1,7 @@
+library(data.table)
 rm(list = ls())
+
+setwd(".")
 
 load("~/OneDrive - Hamad bin Khalifa University/Draem challenge/Synthetic_data/synthetic_table_cluster.RData")
 annotaion_file = read.csv("~/OneDrive - Hamad bin Khalifa University/Draem challenge/Synthetic_data/clinical_data.csv")
