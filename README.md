@@ -3,7 +3,7 @@ Anti-PD1 Dream Challenge 2020-2021
 
 Folder stucture Github :
 
-Model_Building <br />
+Model_building <br />
 -Proccessed_data <br />
 --Riaz <br />
 --... <br />
@@ -11,4 +11,4 @@ Model_Building <br />
 -Scripts <br />
 -Docker_files (the pipelines and the docker build file) <br />
 Synthetic_data (fake/synthetis data with the exact file names and structure of the input data) <br />
-output (our prediction scores) <br />
+Output (our prediction scores) <br />
