@@ -9,5 +9,6 @@ Model_Building <br />
 --... <br />
 -Required_files (gene list and gene info files, in the Rdata format if possible) <br />
 -Scripts <br />
+-Docker_files (the pipelines and the docker build file) <br />
 Synthetic_data (fake/synthetis data with the exact file names and structure of the input data) <br />
 output (our prediction scores) <br />
