@@ -16,7 +16,7 @@ Folder stucture Github :
 Folder stucture Docker :
 
 -scripts (the script) <br />
--data (input data) <br />
+-data (input data & required files) <br />
 -output (the output) <br />
 -sub_pipelines (modules of the pipeline) <br />
 pipeline.sh (the entry point, gets run when the docker is run) <br />
