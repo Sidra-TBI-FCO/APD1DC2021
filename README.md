@@ -9,9 +9,10 @@ Folder stucture Github :
 ---... <br />
 --Required_files (gene list and gene info files, in the Rdata format if possible) <br />
 --Scripts <br />
---Docker_files (the pipelines and the docker build file) <br />
+--Docker_files (the pipelines and the alterantive docker build files) <br />
 -Synthetic_data (fake/synthetis data with the exact file names and structure of the input data) <br />
 -Output (our prediction scores) <br />
+Dockerfile (the file to build the docker)
 
 Folder stucture Docker :
 
