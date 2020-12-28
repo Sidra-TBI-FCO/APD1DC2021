@@ -12,3 +12,11 @@ Model_building <br />
 -Docker_files (the pipelines and the docker build file) <br />
 Synthetic_data (fake/synthetis data with the exact file names and structure of the input data) <br />
 Output (our prediction scores) <br />
+
+Folder stucture Docker :
+
+-scripts (the script)
+-data (input data)
+-output (the output)
+-sub_pipelines (modules of the pipeline)
+pipeline.sh (the entry point, gets run when the docker is run)
