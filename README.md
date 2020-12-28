@@ -15,8 +15,8 @@ Output (our prediction scores) <br />
 
 Folder stucture Docker :
 
--scripts (the script)
--data (input data)
--output (the output)
--sub_pipelines (modules of the pipeline)
-pipeline.sh (the entry point, gets run when the docker is run)
+-scripts (the script) <br />
+-data (input data) <br />
+-output (the output) <br />
+-sub_pipelines (modules of the pipeline) <br />
+pipeline.sh (the entry point, gets run when the docker is run) <br />
