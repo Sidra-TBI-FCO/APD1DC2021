@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#Use the ICR signature to make the score to be used as prediction
+#Use the TGF-Beta and proliferation to make the enrichment score to be used as prediction
 suppressMessages(library(data.table))
 suppressMessages(library(NOISeq))
 suppressMessages(library(GSVA))
@@ -8,32 +8,26 @@ suppressMessages(library(gclus))
 
 # get the input rna-seq gene level count data
 print("Processing RNA-Seq data")
-counts <- fread("/data/GRCh37ERCC_refseq105_genes_count.csv",data.table=F)
-#counts <- fread("/export/cse02/rmall/AntiPD1_Challenge/Anti-PD1-DREAM-Examples/baseline/support_files/GRCh37ERCC_refseq105_genes_count.csv",data.table=F)
-rownames(counts) <- counts[,1]
-counts <- counts[,-1];
-counts <- as.data.frame(counts)
+#load("./Model_building/Required_Files/normalized-log2-count.Rdata") # gene count normalized matrix
+load("/data/normalized-log2-count.Rdata")
+#load("./Model_building/Required_Files/Selected.pathways.3.4.RData")
+load("/data/Selected.pathways.3.4.RData")
 print("Done reading in counts")
 
-#Calculating the Pathways Score
-load("/data/Selected.pathways.3.4.RData")
-#load("/export/cse02/rmall/AntiPD1_Challenge/Anti-PD1-DREAM-Examples/pathways_score/support_files/Selected.pathways.3.4.RData")
 
 print("Computing Pathways Score")
 # Set parameter
 Gene.set = "Selected.pathways"
-tmm <- NOISeq::tmm(counts); 
-Expression.data = log(tmm +1, 2)
-available_genes = rownames(Expression.data)
+available_genes = rownames(normalized.log2.count)
 Gene.list = Selected.pathways
-unavailable_genes_RNAseq = unlist(Gene.list)[-which(unlist(Gene.list) %in% rownames(Expression.data))]
+unavailable_genes_RNAseq = unlist(Gene.list)[-which(unlist(Gene.list) %in% rownames(normalized.log2.count))]
 
 cat(paste0(Gene.set," ssGSEA ", ". Total number of genes is ", length(unlist(Gene.list)), ".",
            " Of which ", length(unlist(Gene.list)[unlist(Gene.list) %in% available_genes]), 
            " genes are available in expression data."), append = TRUE, sep = "\n")
 
 ## ssGSEA
-ES = gsva(Expression.data,Gene.list,method="ssgsea")   # ES is the enrichment score
+ES = gsva(normalized.log2.count,Gene.list,method="ssgsea")   # ES is the enrichment score
 signatures = c("[HM] TGF beta signaling","[LM] Proliferation")  
 ES  = ES[which(rownames(ES) %in% signatures),]
 print("Done computing ES scores for TGF beta and Proliferation Pathways")
@@ -41,7 +35,7 @@ print("Done computing ES scores for TGF beta and Proliferation Pathways")
 pathway_score  <- data.frame("patientID" = colnames(ES) ,"prediction"=as.numeric(t(ES)[,1]))
 
 # write out TGF-beta pathways enrichment score to prediciton file
+#write.csv(pathway_score, file = "Model_building/Processed_data/predictions_pathways.csv", quote = F, row.names = F); 
 write.csv(pathway_score, file = "/output/predictions_pathways.csv", quote = F, row.names = F); 
-#write.csv(icrscore_sig, file = "/export/cse02/rmall/AntiPD1_Challenge/Anti-PD1-DREAM-Examples/output/predictions_2.csv", quote=F, row.names = F);
 print("Done writing out signature")
 
