@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential r-base r-cran-randomforest python3.7 python3-pip python3-setuptools python3-dev python3-pip libcurl4-gnutls-dev libxml2-dev libpng-dev libjpeg-dev libblas-dev liblapack-dev r-bioc-genefilter
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential r-base r-cran-randomforest python3.7 python3-pip python3-setuptools python3-dev python3-pip libcurl4-gnutls-dev libxml2-dev libpng-dev libjpeg-dev libblas-dev liblapack-dev r-bioc-genefilter liblzma-dev libssl-dev libbz2-dev gfortran
 
 RUN R -e "install.packages('data.table', repos = 'http://cran.us.r-project.org')"
 RUN R -e "install.packages('BiocManager', repos = 'http://cran.us.r-project.org')"
