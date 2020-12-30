@@ -8,6 +8,7 @@ suppressMessages(library(base64enc))
 suppressMessages(library(preprocessCore))
 
 # load input data
+print("Loading Required Data")
 #gene.count = read.csv("./Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv") # raw gene count data
 gene.count = read.csv("/data/GRCh37ERCC_refseq105_genes_count.csv")
 #load("./Model_building/Required_Files/geneInfo.July2017.RData") # Load geneInfo file
@@ -36,6 +37,7 @@ mode(genes.filtered) = "numeric"
 count.normalized = newSeqExpressionSet(genes.filtered, featureData = geneInfo)
 fData(count.normalized)[,"gcContent"] = as.numeric(geneInfo[,"gcContent"])
 
+print("Normalization")
 #within and between lane normalization
 # removes lane gene-specific effects, for example effects related to gene length or GC content
 count.normalized = withinLaneNormalization(count.normalized, "gcContent", which = "upper", offset = T)
@@ -43,6 +45,7 @@ count.normalized = withinLaneNormalization(count.normalized, "gcContent", which 
 # removes effect related to between lane distributional differences, as sequencing depth
 count.normalized = betweenLaneNormalization(count.normalized, which = "upper", offset = T)
 
+print("Log2 Transformation")
 #Take= log (unnormalized + .1) + offst(normalized)
 count.norm.log = log(genes.filtered +.1) + offst(count.normalized)
 count.norm.log = floor(exp(count.norm.log) - .1)  #return non decimal values
@@ -60,3 +63,4 @@ normalized.log2.count = log(count.quantiles.norm+1,2) #log base 2
 # final normalized-log2 transformed Rdata 
 #save(normalized.log2.count, file = paste0("./Model_building/Required_Files/normalized-log2-count.Rdata"))
 save(normalized.log2.count, file = paste0("/data/normalized-log2-count.Rdata"))
+print("Done Normalization")
