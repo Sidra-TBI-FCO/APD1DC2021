@@ -14,6 +14,9 @@ RUN R -e "BiocManager::install('GSVA')"
 RUN R -e "BiocManager::install('gclus')"
 RUN R -e "BiocManager::install('ConsensusClusterPlus')"
 RUN R -e "BiocManager::install('clue')"
+RUN R -e "install.packages('devtools', repos = 'http://cran.us.r-project.org')"
+RUN R -e "devtools::install_github('miccec/yaGST')"
+RUN R -e "devtools::install_github('tolgaturan-github/Miracle')"
 
 RUN pip3 install -U scikit-learn notebook pandas numpy jupytext seaborn xgboost shap scipy keras
 
@@ -23,6 +26,7 @@ COPY Model_building/Scripts/normalization.R /scripts/
 COPY Model_building/Scripts/szabo_inflammation_signature.R /scripts/
 COPY Model_building/Scripts/icr_signature.R /scripts/
 COPY Model_building/Scripts/pathways_signature.R /scripts/
+COPY Model_building/Scripts/MiracleScore.R /scripts/
 COPY Model_building/Required_Files/geneInfo.July2017.RData /data/
 COPY Model_building/Required_Files/ICR_genes.RData /data/
 COPY Model_building/Required_Files/Selected.pathways.3.4.RData /data/
@@ -31,6 +35,7 @@ COPY Model_building/Docker_files/normalization_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/baseline_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/ICRscore_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/pathwayssignature_pipeline.sh /sub_pipelines/
+COPY Model_building/Docker_files/MiracleScore_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/pipeline.sh /
 
 ENTRYPOINT ["/pipeline.sh"]
