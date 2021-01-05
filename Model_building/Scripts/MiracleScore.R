@@ -1,10 +1,11 @@
 suppressMessages(library(yaGST))
 suppressMessages(library(Miracle))
 
-setwd("DreamChallenge_PD1/APD1DC2021/Model_building/")
+#setwd("DreamChallenge_PD1/APD1DC2021/Model_building/")
 
+print("Starting calculating Miracle Scores")
 #Load normalized data
-load("Required_Files/normalized-log2-count.RData")
+load("/data/normalized-log2-count.Rdata")
 
 ##Perform Miracle
 Mir_res_ALL <- Calculate_Miracle(normalized.log2.count, platform = "gene")  #available platforms: ens", "u133p2", "entrez", "gene"
