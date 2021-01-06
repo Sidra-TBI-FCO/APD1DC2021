@@ -12,6 +12,9 @@ print("Processing RNA-Seq data")
 load("/data/normalized-log2-count.Rdata")
 #load("./Model_building/Required_Files/Selected.pathways.3.4.RData")
 load("/data/Selected.pathways.3.4.RData")
+load("/data/ICR_genes.RData")
+#add ICR to pathways
+Selected.pathways$`[TBI] ICR` <- ICR_genes
 print("Done reading in counts")
 
 
@@ -28,14 +31,16 @@ cat(paste0(Gene.set," ssGSEA ", ". Total number of genes is ", length(unlist(Gen
 
 ## ssGSEA
 ES = gsva(normalized.log2.count,Gene.list,method="ssgsea")   # ES is the enrichment score
-signatures = c("[HM] TGF beta signaling","[LM] Proliferation")  
-ES  = ES[which(rownames(ES) %in% signatures),]
-print("Done computing ES scores for TGF beta and Proliferation Pathways")
+#signatures = c("[HM] TGF beta signaling","[LM] Proliferation")  
+#ES  = ES[which(rownames(ES) %in% signatures),]
+print("Done computing ES scores")
 
-pathway_score  <- data.frame("patientID" = colnames(ES) ,"prediction"=as.numeric(t(ES)[,1]))
+#pathway_score  <- data.frame("patientID" = colnames(ES) ,"prediction"=as.numeric(t(ES)[,1]))
 
 # write out TGF-beta pathways enrichment score to prediciton file
-#write.csv(pathway_score, file = "Model_building/Processed_data/predictions_pathways.csv", quote = F, row.names = F); 
-write.csv(pathway_score, file = "/output/predictions_pathways.csv", quote = F, row.names = F); 
+#write.csv(pathway_score, file = "Model_building/Processed_data/predictions_pathways.csv", quote = F, row.names = F);
+#dir.create("./output",showWarnings = FALSE)
+#write.csv(pathway_score, file = "./output/predictions_pathways.csv", quote = F, row.names = F); 
+save(ES,file = "/data/patway_score.Rdata")
 print("Done writing out signature")
 
