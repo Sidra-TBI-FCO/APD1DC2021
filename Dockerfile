@@ -22,6 +22,7 @@ RUN pip3 install -U scikit-learn notebook pandas numpy jupytext seaborn xgboost 
 
 RUN  mkdir -p /scripts/ && mkdir -p /data/ && mkdir -p /output/&& mkdir -p /sub_pipelines/
 COPY Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv /data/
+COPY Synthetic_Data/clinical_data.csv /data/
 COPY Model_building/Scripts/normalization.R /scripts/
 COPY Model_building/Scripts/szabo_inflammation_signature.R /scripts/
 COPY Model_building/Scripts/icr_signature.R /scripts/
