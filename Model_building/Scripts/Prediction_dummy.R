@@ -1,7 +1,7 @@
 # this is the final prediction script
 library(scales)
 #load data
-load ("/data/patway_score.Rdata")
+load ("/data/patway_score.RData")
 ES <- t(ES)
 ES <- as.data.frame(ES)
 clinical_data <- read.csv("/data/clinical_data.csv")
