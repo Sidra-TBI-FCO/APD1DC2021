@@ -1,10 +1,10 @@
 # this is the final prediction script
 library(scales)
 #load data
-load ("/data/patway_score.RData")
+load ("/data1/patway_score.RData")
 ES <- t(ES)
 ES <- as.data.frame(ES)
-clinical_data <- read.csv("/data/clinical_data.csv")
+clinical_data <- read.csv("/data1/clinical_data.csv")
 #clinical_data$patientID == rownames(ES)
 
 #patients without TMB
@@ -40,5 +40,5 @@ summary(table$prediction.score)
 clean.table = table[,c("patientID","prediction.score_final")]
 colnames(clean.table) = c("patientID","prediction")
 dir.create("/output",showWarnings = F)
-write.csv(clean.table,file = "/output/predictions.csv",row.names = F)
+write.csv(clean.table,file = "/output/predictions.csv",row.names = F,quote=F)
 #write.csv(table,file = "/output/prediction_table.csv",row.names = F)

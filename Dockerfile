@@ -21,18 +21,19 @@ RUN R -e "devtools::install_github('tolgaturan-github/Miracle')"
 
 RUN pip3 install -U scikit-learn notebook pandas numpy jupytext seaborn xgboost shap scipy keras
 
-RUN  mkdir -p /scripts/ && mkdir -p /data/ && mkdir -p /output/&& mkdir -p /sub_pipelines/
-COPY Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv /data/
-COPY Synthetic_Data/clinical_data.csv /data/
+RUN  mkdir -p /scripts/ && mkdir -p /data1/ && mkdir -p /output/ && mkdir -p /sub_pipelines/
+
+COPY Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv /data1/
+COPY Synthetic_Data/clinical_data.csv /data1/
 COPY Model_building/Scripts/normalization.R /scripts/
 COPY Model_building/Scripts/szabo_inflammation_signature.R /scripts/
 COPY Model_building/Scripts/icr_signature.R /scripts/
 COPY Model_building/Scripts/pathways_signature.R /scripts/
 COPY Model_building/Scripts/MiracleScore.R /scripts/
 COPY Model_building/Scripts/Prediction_dummy.R /scripts/
-COPY Model_building/Required_Files/geneInfo.July2017.RData /data/
-COPY Model_building/Required_Files/ICR_genes.RData /data/
-COPY Model_building/Required_Files/Selected.pathways.3.4.RData /data/
+COPY Model_building/Required_Files/geneInfo.July2017.RData /data1/
+COPY Model_building/Required_Files/ICR_genes.RData /data1/
+COPY Model_building/Required_Files/Selected.pathways.3.4.RData /data1/
 
 COPY Model_building/Docker_files/normalization_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/baseline_pipeline.sh /sub_pipelines/
@@ -42,4 +43,4 @@ COPY Model_building/Docker_files/MiracleScore_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/predictiondummy_pipeline.sh /sub_pipelines/
 COPY Model_building/Docker_files/pipeline.sh /
 
-ENTRYPOINT ["/pipeline.sh"]
+ENTRYPOINT ["bash","/pipeline.sh"]

@@ -9,10 +9,10 @@ suppressMessages(library(gclus))
 # get the input rna-seq gene level count data
 print("Processing RNA-Seq data")
 #load("./Model_building/Required_Files/normalized-log2-count.RData") # gene count normalized matrix
-load("/data/normalized-log2-count.RData")
+load("/data1/normalized-log2-count.RData")
 #load("./Model_building/Required_Files/Selected.pathways.3.4.RData")
-load("/data/Selected.pathways.3.4.RData")
-load("/data/ICR_genes.RData")
+load("/data1/Selected.pathways.3.4.RData")
+load("/data1/ICR_genes.RData")
 #add ICR to pathways
 Selected.pathways$`[TBI] ICR` <- ICR_genes
 print("Done reading in counts")
@@ -41,6 +41,6 @@ print("Done computing ES scores")
 #write.csv(pathway_score, file = "Model_building/Processed_data/predictions_pathways.csv", quote = F, row.names = F);
 #dir.create("./output",showWarnings = FALSE)
 #write.csv(pathway_score, file = "./output/predictions_pathways.csv", quote = F, row.names = F); 
-save(ES,file = "/data/patway_score.RData")
+save(ES,file = "/data1/patway_score.RData")
 print("Done writing out signature")
 

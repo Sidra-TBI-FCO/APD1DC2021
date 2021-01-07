@@ -10,9 +10,9 @@ suppressMessages(library(preprocessCore))
 # load input data
 print("Loading Required Data")
 #gene.count = read.csv("./Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv") # raw gene count data
-gene.count = read.csv("/data/GRCh37ERCC_refseq105_genes_count.csv")
+gene.count = read.csv("/data1/GRCh37ERCC_refseq105_genes_count.csv")
 #load("./Model_building/Required_Files/geneInfo.July2017.RData") # Load geneInfo file
-load("/data/geneInfo.July2017.RData")
+load("/data1/geneInfo.July2017.RData")
 
 # Rename rownames
 rownames(gene.count) = gene.count$X
@@ -62,5 +62,5 @@ normalized.log2.count = log(count.quantiles.norm+1,2) #log base 2
 
 # final normalized-log2 transformed RData 
 #save(normalized.log2.count, file = paste0("./Model_building/Required_Files/normalized-log2-count.RData"))
-save(normalized.log2.count, file = paste0("/data/normalized-log2-count.RData"))
+save(normalized.log2.count, file = paste0("/data1/normalized-log2-count.RData"))
 print("Done Normalization")
