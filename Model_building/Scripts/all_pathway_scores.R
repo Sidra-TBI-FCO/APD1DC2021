@@ -6,7 +6,7 @@ setwd("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Model_Building/")
 #Run GSVA for all the pathways on Riaz datasets to get each immune related pathways score
 
 #Load Riaz data
-load("Processed data/Riaz etal/002.Riaz_Data_normalized.gene.counts.Rdata")
+load("Processed data/Riaz etal/002.Riaz_Data_normalized.gene.counts.RData")
 riaz_clinical_data <- read.table("Processed data/Riaz etal/clinical_data - all cohort.csv",header=TRUE,sep=",")
 riaz_clinical_data$Sample_title <- as.vector(as.character(riaz_clinical_data$Sample_title))
 riaz_clinical_data$Response1 <- as.vector(as.character(riaz_clinical_data$Response1))
