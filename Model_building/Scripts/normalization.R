@@ -60,7 +60,7 @@ colnames(count.quantiles.norm) = colnames(count.norm.log)
 #Log transformation (final normalized-transformed file)
 normalized.log2.count = log(count.quantiles.norm+1,2) #log base 2
 
-# final normalized-log2 transformed Rdata 
-#save(normalized.log2.count, file = paste0("./Model_building/Required_Files/normalized-log2-count.Rdata"))
-save(normalized.log2.count, file = paste0("/data/normalized-log2-count.Rdata"))
+# final normalized-log2 transformed RData 
+#save(normalized.log2.count, file = paste0("./Model_building/Required_Files/normalized-log2-count.RData"))
+save(normalized.log2.count, file = paste0("/data/normalized-log2-count.RData"))
 print("Done Normalization")
