@@ -5,7 +5,7 @@ suppressMessages(library(Miracle))
 
 print("Starting calculating Miracle Scores")
 #Load normalized data
-load("/data/normalized-log2-count.Rdata")
+load("/data/normalized-log2-count.RData")
 
 ##Perform Miracle
 Mir_res_ALL <- Calculate_Miracle(normalized.log2.count, platform = "gene")  #available platforms: ens", "u133p2", "entrez", "gene"
