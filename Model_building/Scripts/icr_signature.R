@@ -8,8 +8,8 @@ suppressMessages(library(clue))
 
 # get the input rna-seq gene level count data
 print("Processing RNA-Seq data")
-#load("./Model_building/Required_Files/normalized-log2-count.Rdata") # gene count normalized matrix
-load("/data/normalized-log2-count.Rdata")
+#load("./Model_building/Required_Files/normalized-log2-count.RData") # gene count normalized matrix
+load("/data/normalized-log2-count.RData")
 #load("./Model_building/Required_Files/ICR_genes.RData")
 load("/data/ICR_genes.RData")
 print("Done reading in counts")
