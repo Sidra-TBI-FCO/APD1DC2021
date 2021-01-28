@@ -7,10 +7,10 @@ suppressMessages(library(yaGST))
 suppressMessages(library(Miracle))
 
 #Load the log2 normalized dataset
-load("Model_building/Required_Files/normalized-log2-count.Rdata")
+load("/data1/normalized-log2-count.RData")
 
 #Load normalized data
-load("Model_building/Required_Files/Selelected_Path_VariousGeneIDs.RData")
+load("/data1/Selelected_Path_VariousGeneIDs.RData")
 
 #Perform Miracle
 Mir_res_ALL <- Calculate_Miracle(normalized.log2.count, platform = "gene")  #available platforms: ens", "u133p2", "entrez", "gene"
@@ -30,7 +30,7 @@ for (i in 1:ncol(output_df))
 }
 
 #Load the best models 
-load("Model_building/Required_Files/CV_ML_models.Rdata")
+load("/data1/CV_ML_models.Rdata")
 model_list <- list(gpFit, svmFit, rfFit, gbmFit)
 names(model_list) <- c("GP","SVM","RF","GBM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
@@ -43,6 +43,6 @@ for (i in 1:length(model_list))
 get_nonresponse_info <- as.data.frame(get_nonresponse_info)
 
 predictions_df <- data.frame("patientID"=rownames(output_df),"prediction"=rowMeans(get_nonresponse_info))
-write.csv(predictions_df, file="output/predictions.csv",quote=F,row.names=F)
+write.csv(predictions_df, file="/output/predictions.csv",quote=F,row.names=F)
 
 print("Done writing ML model predictions")
