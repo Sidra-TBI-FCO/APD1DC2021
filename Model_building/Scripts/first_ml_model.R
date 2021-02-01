@@ -128,12 +128,12 @@ nzv <- nearZeroVar(combined_df, saveMetrics= TRUE)
 
 #Find correlated descriptors
 descrCor <-  cor(combined_df[,c(1:57)])
-highlyCorDescr <- findCorrelation(descrCor, cutoff = 0.95)
+highlyCorDescr <- findCorrelation(descrCor, cutoff = 0.99)
 summary(descrCor[upper.tri(descrCor)])
 combined_df$Status <- as.numeric(as.vector(combined_df$Status))
 
 #Revised Data Frame after removal of highly correlated features
-rev_df <- combined_df[,-c(setdiff(highlyCorDescr,8))]
+rev_df <- combined_df[,-highlyCorDescr]
 req_columns <- setdiff(colnames(rev_df),"Status")
 rev_df$Status <- as.factor(as.vector(rev_df$Status))
 levels(rev_df$Status) <- c("NonResponse","Response")
