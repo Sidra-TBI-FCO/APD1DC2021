@@ -127,7 +127,7 @@ featurePlot(x = combined_df[, c(1:4,57)],
 nzv <- nearZeroVar(combined_df, saveMetrics= TRUE)
 
 #Find correlated descriptors
-descrCor <-  cor(combined_df[,c(1:57)])
+descrCor <-  cor(combined_df[,c(1:58)])
 highlyCorDescr <- findCorrelation(descrCor, cutoff = 0.99)
 summary(descrCor[upper.tri(descrCor)])
 combined_df$Status <- as.numeric(as.vector(combined_df$Status))

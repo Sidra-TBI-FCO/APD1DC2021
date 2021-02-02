@@ -16,9 +16,13 @@ load("Model_building/Required_Files/normalized-log2-count.Rdata")
 #Load normalized data
 #load("/data1/Selelected_Path_VariousGeneIDs.RData")
 load("Model_building/Required_Files/Selelected_Path_VariousGeneIDs.RData")
+load("Model_building/Required_Files/c2 Lance Signatures.Rdata")
 
 #Perform Miracle
 Mir_res_ALL <- Calculate_Miracle(normalized.log2.count, platform = "gene")  #available platforms: ens", "u133p2", "entrez", "gene"
+
+#Add Lance Signature to SelPath_Symb
+SelPath_Symb$Lance_Signature <- c2.signatures$Gene.Symbol
 
 ## Calculate enrichment scores using gene Symbols. Note that you can use other gene annotations
 resMWW <- c()
@@ -37,8 +41,8 @@ for (i in 1:ncol(output_df))
 #Load the best models 
 #load("/data1/CV_ML_models.Rdata")
 load("Model_building/Required_Files/CV_ML_models.Rdata")
-model_list <- list(gpFit, rdaFit, rfFit, gbmFit, xgbFit)
-names(model_list) <- c("GP","RDA","RF","GBM","XGB")
+model_list <- list(gpFit, rdaFit, rfFit, gbmFit, xgbFit, svmFit)
+names(model_list) <- c("GP","RDA","RF","GBM","XGB", "SVM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
 
 get_response_info <- NULL
@@ -65,7 +69,7 @@ for (i in 1:nrow(predictions_df))
   tmb_var <- clinical_df[clinical_df$patientID==patientID,]$TMB_Scaled
   if (!is.na(tmb_var))
   {
-    prediction <- (1*predictions_df[i,]$prediction+1*tmb_var)/2
+    prediction <- (1*predictions_df[i,]$prediction+3*tmb_var)/4
   }
   else{
     prediction <- predictions_df[i,]$prediction
