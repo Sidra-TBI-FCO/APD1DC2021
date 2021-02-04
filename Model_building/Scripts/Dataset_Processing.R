@@ -1,15 +1,11 @@
 # library(devtools)
 # install_github("miccec/yaGST")
 # install_github("tolgaturan-github/Miracle")
-
-
-setwd("Anti-PD1 Dream Challenge Team/")
 library(yaGST)
 library(Miracle)
 library(GSVA)
 # ?Calculate_Miracle
 
-# the dataset are in the google drive
 expr0 <- readRDS("Response Datasets Michele/ICI response datasets/GSE126044_Normalized_Expression.rds")
 meta0 <- readRDS("Response Datasets Michele/ICI response datasets/GSE126044_Meta_data.rds")
 
@@ -20,6 +16,8 @@ meta <- readRDS("Response Datasets Michele/ICI response datasets/Meta_data_Melan
 # load("GM_AntiPD1/Data/Selected.pathways.3.4.RData")
 # Selected.pathways[[55]] <- c("NUF2", "NEK2", "TPX2", "KIF2C", "MCM10")
 # names(Selected.pathways)[[55]] <- "TMB_Proliferation"
+# Selected.pathways[[56]] <- c("ZAP70", "EOMES", "GZMK", "CD3G", "HLA-A", "HLA-DRA", "CD8A", "CD8B", "CD274", "MS4A1", "RCOR2", "KDM1A")
+# names(Selected.pathways)[[56]] <- "Lance_Signature"
 # library("biomaRt")
 # SelPath_entrex <- list()
 # SelPath_ensembl <- list()
@@ -56,7 +54,11 @@ Mir0 <- Calculate_Miracle(expr0, platform = "gene")
 resMWW <- c()
 for(i in 1:ncol(expr0)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(expr0[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr0[,i], SelPath_Symb$Lance_Signature[1:10],
+            SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
+
 Cho_GSE126044 <- cbind(Mir0, meta0[ rownames(Mir0),], resMWW)
 Cho_GSE126044$Response <- factor(Cho_GSE126044$Response, levels = c("Nonresponse", "Response"))
 
@@ -73,6 +75,9 @@ RiazMeta[rownames(meta$Riaz_Melanoma_Pre), "Treat"] <- "Pre"
 resMWW <- c()
 for(i in 1:ncol(expr$Riaz)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_ensembl,function(x) mwwGST(expr$Riaz[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr$Riaz[,i], SelPath_ensembl$Lance_Signature[!SelPath_ensembl$Lance_Signature %in% c("ENSG00000004487", "ENSG00000167771")],
+                          c("ENSG00000004487", "ENSG00000167771"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 Riaz_GSE91061 <- cbind(Riaz, RiazMeta[rownames(Riaz), ], resMWW)
 
@@ -95,6 +100,9 @@ GideMeta[rownames(meta$Gide_Melanoma_PD1_OnTreatment), "Treat"] <- "On"
 resMWW <- c()
 for(i in 1:ncol(expr$Gide)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_ensembl,function(x) mwwGST(expr$Gide[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr$Gide[,i], SelPath_ensembl$Lance_Signature[!SelPath_ensembl$Lance_Signature %in% c("ENSG00000004487", "ENSG00000167771")],
+                          c("ENSG00000004487", "ENSG00000167771"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 Gide_PRJEB23709 <- cbind(Gide, GideMeta[rownames(Gide), ], resMWW)
@@ -108,6 +116,9 @@ vanMeta <- meta$`VanAllenMelanoma_anti-CTLA4`
 resMWW <- c()
 for(i in 1:ncol(expr$vanAllen)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_entrex,function(x) mwwGST(expr$vanAllen[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr$vanAllen[,i], SelPath_entrex$Lance_Signature[!SelPath_entrex$Lance_Signature %in% c("283248", "23028")],
+                          c("283248", "23028"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 vanAllen <- cbind(vanAllen_res, vanMeta[rownames(vanAllen_res), ], resMWW)
@@ -126,6 +137,9 @@ RibasMeta[rownames(meta$GSE78220_Melanoma_previous_mapki), "mapki"] <- "Yes"
 resMWW <- c()
 for(i in 1:ncol(expr$Ribas)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_ensembl,function(x) mwwGST(expr$Ribas[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr$Ribas[,i], SelPath_ensembl$Lance_Signature[!SelPath_ensembl$Lance_Signature %in% c("ENSG00000004487", "ENSG00000167771")],
+                          c("ENSG00000004487", "ENSG00000167771"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 Ribas_GSE78220 <- cbind(Ribas, RibasMeta[rownames(Ribas), ], resMWW)
@@ -143,6 +157,9 @@ DizierMeta <- meta$GSE35640_Melanoma_MAGEA3_IO
 resMWW <- c()
 for(i in 1:ncol(expr$Dizier)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_affy,function(x) mwwGST(expr$Dizier[,i], x)$nes )))
+  LanceScore <- mwwExtGST(expr$Dizier[,i], SelPath_ensembl$Lance_Signature[!SelPath_ensembl$Lance_Signature %in%  c("236030_at", "212348_s_at")],
+                          c("236030_at", "212348_s_at"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 UlloaMontoya_GSE35640 <- cbind(Dizier, DizierMeta[rownames(Dizier), ], resMWW)
@@ -175,6 +192,9 @@ ChenMeta$ResponseOverall[which(ChenMeta$ResponseOverall == "N/A")] <- "R"
 resMWW <- c()
 for(i in 1:ncol(as.matrix(ChenExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(as.matrix(ChenExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(ChenExpr)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 Chen <- cbind(Chen_res, ChenMeta, resMWW)
 
@@ -194,6 +214,9 @@ JangMeta <- read.csv("Training Data/GSE40419 - lung/clinical_data.csv", row.name
 resMWW <- c()
 for(i in 1:ncol(as.matrix(JangExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(as.matrix(JangExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(JangExpr)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 Jang_GSE40419 <- cbind(Jang_res, JangMeta[rownames(Jang_res), ], resMWW)
 
@@ -221,6 +244,9 @@ rownames(AsciertoMeta) <- AsciertoMeta$Sample_description
 resMWW <- c()
 for(i in 1:ncol(as.matrix(AsciertoExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(as.matrix(AsciertoExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(AsciertoExpr)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 Ascierto_GSE67501 <- cbind(Ascierto_res, AsciertoMeta[rownames(Ascierto_res), ], resMWW)
@@ -243,6 +269,9 @@ rownames(AsciertoMeta) <- AsciertoMeta$Sample_description
 resMWW <- c()
 for(i in 1:ncol(as.matrix(AsciertoExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(as.matrix(AsciertoExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(AsciertoExpr)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 
 Ascierto_GSE79691 <- cbind(Ascierto_res, AsciertoMeta[rownames(Ascierto_res), ], resMWW)
@@ -266,6 +295,9 @@ rownames(AuslanderMeta) <- AuslanderMeta$Sample_title
 resMWW <- c()
 for(i in 1:ncol(as.matrix(AuslanderExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(as.matrix(AuslanderExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(AuslanderExpr)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 Auslander_GSE115821 <- cbind(Auslander_res, AuslanderMeta[rownames(Auslander_res), ], resMWW)
 
@@ -285,6 +317,9 @@ rownames(KimMeta) <- gsub("-", ".",KimMeta$patient)
 resMWW <- c()
 for(i in 1:ncol(as.matrix(KimExpr))){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_entrex,function(x) mwwGST(as.matrix(KimExpr)[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(KimExpr)[,i], SelPath_entrex$Lance_Signature[!SelPath_entrex$Lance_Signature %in% c("283248", "23028")],
+                          c("283248", "23028"))
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 Kim_PRJEB25780 <- cbind(Kim_res, KimMeta[rownames(Kim_res), ], resMWW)
 
@@ -294,12 +329,12 @@ save(Cho_GSE126044, Riaz_GSE91061, Gide_PRJEB23709, vanAllen,
      Ribas_GSE78220, UlloaMontoya_GSE35640, Chen, Jang_GSE40419, Ascierto_GSE67501,
      Ascierto_GSE79691, Auslander_GSE115821, Kim_PRJEB25780, 
      file= "Master_Datasets.RData")
-load("GM_AntiPD1/Master_Datasets.RData")
+# load("Master_Datasets.RData")
 
 
 save(Cho_GSE126044, Riaz_GSE91061, Gide_PRJEB23709, vanAllen,
      UlloaMontoya_GSE35640, Chen, Kim_PRJEB25780, 
-     file= "GM_AntiPD1/Master_Datasets_Selected.RData")
+     file= "Master_Datasets_Selected.RData")
 
 
 #### GSE121810 Cloughesy
