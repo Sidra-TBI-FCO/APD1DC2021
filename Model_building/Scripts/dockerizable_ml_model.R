@@ -22,12 +22,15 @@ load("Model_building/Required_Files/c2 Lance Signatures.Rdata")
 Mir_res_ALL <- Calculate_Miracle(normalized.log2.count, platform = "gene")  #available platforms: ens", "u133p2", "entrez", "gene"
 
 #Add Lance Signature to SelPath_Symb
-SelPath_Symb$Lance_Signature <- c2.signatures$Gene.Symbol
+SelPath_Symb$Lance_Signature <- c2.signatures
 
 ## Calculate enrichment scores using gene Symbols. Note that you can use other gene annotations
 resMWW <- c()
 for(i in 1:ncol(normalized.log2.count)){
   resMWW <- rbind(resMWW, unlist(lapply(SelPath_Symb,function(x) mwwGST(normalized.log2.count[,i], x)$nes )))
+  LanceScore <- mwwExtGST(as.matrix(normalized.log2.count)[,i], SelPath_Symb$Lance_Signature[1:10],
+                          SelPath_Symb$Lance_Signature[11:12])
+  resMWW[nrow(resMWW),"Lance_Signature"] <- LanceScore$nes
 }
 resMWW
 
@@ -41,8 +44,8 @@ for (i in 1:ncol(output_df))
 #Load the best models 
 #load("/data1/CV_ML_models.Rdata")
 load("Model_building/Required_Files/CV_ML_models.Rdata")
-model_list <- list(gpFit, rdaFit, rfFit, gbmFit, xgbFit, svmFit)
-names(model_list) <- c("GP","RDA","RF","GBM","XGB", "SVM")
+model_list <- list(gpFit, rfFit, gbmFit, xgbFit, svmFit)
+names(model_list) <- c("GP","RF","GBM","XGB", "SVM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
 
 get_response_info <- NULL
@@ -60,7 +63,8 @@ clinical_df$patientID <- as.character(as.vector(clinical_df$patientID))
 par(mfrow=c(2,1))
 plot(clinical_df$TMB)
 plot(1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3])))))
-clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3]))))
+#clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3]))))
+clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(243)))
 
 final_df <- NULL
 for (i in 1:nrow(predictions_df))
@@ -69,7 +73,7 @@ for (i in 1:nrow(predictions_df))
   tmb_var <- clinical_df[clinical_df$patientID==patientID,]$TMB_Scaled
   if (!is.na(tmb_var))
   {
-    prediction <- (1*predictions_df[i,]$prediction+3*tmb_var)/4
+    prediction <- (1*predictions_df[i,]$prediction+9*tmb_var)/10
   }
   else{
     prediction <- predictions_df[i,]$prediction
