@@ -43,7 +43,7 @@ for (i in 1:ncol(output_df))
 
 #Load the best models 
 #load("/data1/CV_ML_models.Rdata")
-load("Model_building/Required_Files/CV_ML_models.Rdata")
+load("Model_building/Required_Files/CV_ML_models_v5.Rdata")
 model_list <- list(gpFit, rfFit, gbmFit, xgbFit, svmFit)
 names(model_list) <- c("GP","RF","GBM","XGB", "SVM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
@@ -62,7 +62,7 @@ clinical_df$patientID <- as.character(as.vector(clinical_df$patientID))
 
 par(mfrow=c(2,1))
 plot(clinical_df$TMB)
-plot(1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3])))))
+plot(1/(1+exp(-log(clinical_df$TMB)+log(243))))
 #clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3]))))
 clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(243)))
 
@@ -88,3 +88,23 @@ final_df$prediction <- as.numeric(as.vector(final_df$prediction))
 write.csv(final_df, file="output/mix_predictions.csv",quote=F,row.names=F)
 
 print("Done writing ML model predictions")
+
+library(ROCR)
+library(pROC)
+library(PRROC)
+
+load("Model_building/Required_Files/clinical_HNSC.Rdata")
+load("Model_building/Required_Files/predictions_df_HNSC.Rdata")
+clinical$Cat_Response <- 1
+clinical[clinical$simple.response!="Responder",]$Cat_Response <- 0
+
+pred <- prediction(predictions_df$prediction, clinical$Cat_Response)
+perf <- performance(pred, "prec", "rec")
+plot(perf, avg= "threshold", colorize=TRUE, lwd= 3, ylim = c(0,1),
+     main= "... Precision/Recall graphs ...")
+
+fg <- predictions_df[which(clinical$Cat_Response==0),]$prediction
+bg <- predictions_df[which(clinical$Cat_Response==1),]$prediction
+pr <- pr.curve(scores.class0 = fg , scores.class1 = bg, curve = T)
+roc <- roc.curve(scores.class0 = fg , scores.class1 = bg, curve=T)
+plot(pr)

@@ -201,7 +201,6 @@ Chen <- cbind(Chen_res, ChenMeta, resMWW)
 
 
 #### GSE40419 Jang - Lung
-
 JangExpr0 <- read.delim("Training Data/GSE40419 - lung/GSE40419_LC-87_RPKM_expression.txt")
 JangExpr <- JangExpr0[!duplicated(JangExpr0$gene), ]
 rownames(JangExpr) <-JangExpr$gene
