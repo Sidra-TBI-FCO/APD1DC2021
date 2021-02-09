@@ -16,18 +16,18 @@ cl <- makePSOCKcluster(32)
 registerDoParallel(cl)
 
 #Load all the data
-load("Model_building/Required_Files/Master_Datasets.RData")
+load("Model_building/Required_Files/Master_Datasets_Selected.RData")
 
-Kim_PRJEB25780[Kim_PRJEB25780$RECIST=="SD",]$Response <- 1
-Ascierto_GSE67501[Ascierto_GSE67501$Response1=="R",]$Response <- 1
-Ascierto_GSE67501[Ascierto_GSE67501$Response1=="NR",]$Response <- 0
-Ascierto_GSE67501$Response <- as.numeric(as.vector(Ascierto_GSE67501$Response))
+#Kim_PRJEB25780[Kim_PRJEB25780$RECIST=="SD",]$Response <- 1
+#Ascierto_GSE67501[Ascierto_GSE67501$Response1=="R",]$Response <- 1
+#Ascierto_GSE67501[Ascierto_GSE67501$Response1=="NR",]$Response <- 0
+#Ascierto_GSE67501$Response <- as.numeric(as.vector(Ascierto_GSE67501$Response))
 
-Ascierto_GSE79691$Response <- 1
-Ascierto_GSE79691[Ascierto_GSE79691$response.to.anti.pd.1..nivolumab..immunotherapy..regression.or.progression.=="Progression",]$Response <- 0
+#Ascierto_GSE79691$Response <- 1
+#Ascierto_GSE79691[Ascierto_GSE79691$response.to.anti.pd.1..nivolumab..immunotherapy..regression.or.progression.=="Progression",]$Response <- 0
 
-Auslander_GSE115821$Response <- 0
-Auslander_GSE115821[Auslander_GSE115821$response==" R",]$Response <- 1
+#Auslander_GSE115821$Response <- 0
+#Auslander_GSE115821[Auslander_GSE115821$response==" R",]$Response <- 1
 
 dfs <- Filter(function(x) is(x, "data.frame"), mget(ls()))
 
@@ -80,20 +80,20 @@ for (i in 1:length(dataset_ids))
 }
 
 #Get all the common colnames (remove Chen dataset)
-common_colnames <- colnames(dfs[[dataset_ids[[1]]]])
-for (i in 2:length(dataset_ids))
+common_colnames <- colnames(dfs[[dataset_ids[[2]]]])
+for (i in 3:length(dataset_ids))
 {
-  if (i!=4)
-  {
+#  if (i!=4)
+#  {
     common_colnames <- intersect(common_colnames,colnames(dfs[[dataset_ids[i]]]))
-  }
+#  }
 }
 
 #Make the combined df and remove rows with NA in Status (remove Chen)
 combined_df <- NULL
 for (i in 1:length(dataset_ids))
 {
-  if (i!=4)
+  if (i!=1)
   {
     temp_df <- dfs[[dataset_ids[i]]]
     temp_df <- temp_df[,common_colnames]
@@ -315,4 +315,4 @@ splom(resamps)
 #Stop parallel processing
 stopCluster(cl)
 
-save(list=c("req_columns","gbmFit","svmFit","rdaFit","gpFit","rfFit","xgbFit"),file="Model_building/Required_Files/CV_ML_models_v5.Rdata")
+save(list=c("req_columns","gbmFit","svmFit","rdaFit","gpFit","rfFit","xgbFit"),file="Model_building/Required_Files/CV_ML_models_submission_q3_v1.Rdata")
