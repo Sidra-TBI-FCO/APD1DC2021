@@ -43,9 +43,9 @@ for (i in 1:ncol(output_df))
 
 #Load the best models 
 #load("/data1/CV_ML_models.Rdata")
-load("Model_building/Required_Files/CV_ML_models_v5.Rdata")
-model_list <- list(gpFit, rfFit, gbmFit, xgbFit, svmFit)
-names(model_list) <- c("GP","RF","GBM","XGB", "SVM")
+load("Model_building/Required_Files/CV_ML_models_submission_q3_v2.Rdata")
+model_list <- list(gpFit, rfFit, rdaFit, gbmFit, svmFit)
+names(model_list) <- c("GP","RF","RDA","GBM","SVM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
 
 get_response_info <- NULL
@@ -62,9 +62,9 @@ clinical_df$patientID <- as.character(as.vector(clinical_df$patientID))
 
 par(mfrow=c(2,1))
 plot(clinical_df$TMB)
-plot(1/(1+exp(-log(clinical_df$TMB)+log(243))))
+plot(1-(1/(1+exp(-log(clinical_df$TMB)+log(243)))))
 #clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(as.numeric(quantile(clinical_df$TMB, na.rm=T)[3]))))
-clinical_df$TMB_Scaled <- 1/(1+exp(-log(clinical_df$TMB)+log(243)))
+clinical_df$TMB_Scaled <- 1-(1/(1+exp(-log(clinical_df$TMB)+log(243))))
 
 final_df <- NULL
 for (i in 1:nrow(predictions_df))
@@ -73,7 +73,7 @@ for (i in 1:nrow(predictions_df))
   tmb_var <- clinical_df[clinical_df$patientID==patientID,]$TMB_Scaled
   if (!is.na(tmb_var))
   {
-    prediction <- (1*predictions_df[i,]$prediction+9*tmb_var)/10
+    prediction <- (1*predictions_df[i,]$prediction+1*tmb_var)/2
   }
   else{
     prediction <- predictions_df[i,]$prediction
