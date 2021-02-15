@@ -1,0 +1,39 @@
+#!/usr/bin/env Rscript
+
+# Normalizing the raw data 
+
+# Load Library
+
+# load input data
+print("Loading Required Data")
+gene.count = read.csv("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv") # raw gene count data
+#gene.count = read.csv("/data1/GRCh37ERCC_refseq105_genes_count.csv")
+load("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Model_building/Required_Files/geneInfo.July2017.RData") # Load geneInfo file
+#load("/data1/geneInfo.July2017.RData")
+
+# Rename rownames
+rownames(gene.count) = gene.count$X
+gene.count$X = NULL
+
+# convert gene.count into matrix 
+count.matrix = as.matrix(gene.count)
+
+# Remove Na 
+geneInfo = geneInfo[!is.na(geneInfo[,1]),]
+
+#Extract genes from geneInfo that matches genes in samples.matrix
+# unique = returns a vector, data frame or array like x but with duplicate elements/rows removed.
+common.genes = unique(rownames(count.matrix)[which(rownames(count.matrix) %in% rownames(geneInfo))])
+
+# Extract the common genes for geneInfo and samples.matrix
+geneInfo = geneInfo[common.genes,]
+genes.filtered = count.matrix[common.genes,]
+
+mode(genes.filtered) = "numeric"
+
+normalized.log2.count = log(genes.filtered+1,2) #log base 2
+
+# final normalized-log2 transformed RData 
+#save(normalized.log2.count, file = paste0("./Model_building/Required_Files/normalized-log2-count.RData"))
+save(normalized.log2.count, file = paste0("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Model_building/Required_Files/revised_normalized-log2-count.RData"))
+print("Done Normalization")

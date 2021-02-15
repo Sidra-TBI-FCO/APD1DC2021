@@ -9,10 +9,10 @@ suppressMessages(library(preprocessCore))
 
 # load input data
 print("Loading Required Data")
-#gene.count = read.csv("./Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv") # raw gene count data
-gene.count = read.csv("/data1/GRCh37ERCC_refseq105_genes_count.csv")
-#load("./Model_building/Required_Files/geneInfo.July2017.RData") # Load geneInfo file
-load("/data1/geneInfo.July2017.RData")
+gene.count = read.csv("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Synthetic_Data/GRCh37ERCC_refseq105_genes_count.csv") # raw gene count data
+#gene.count = read.csv("/data1/GRCh37ERCC_refseq105_genes_count.csv")
+load("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/Model_building/Required_Files/geneInfo.July2017.RData") # Load geneInfo file
+#load("/data1/geneInfo.July2017.RData")
 
 # Rename rownames
 rownames(gene.count) = gene.count$X
