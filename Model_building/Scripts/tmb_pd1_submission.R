@@ -67,6 +67,9 @@ for (i in 1:length(get_all_patients))
     {
       pdl1_var2 <- "PDL1_High"
     }
+    else{
+      pdl1_var2 <- "PDL1_Low"
+    }
   }
   else
   {
@@ -87,12 +90,9 @@ for (i in 1:length(get_all_patients))
     {
       tmb_var2 <- "TMB_High"
     }
-    else if (resMWW[resMMW_patient_idx,]$TMB_Proliferation<=prol_low_cutoff)
+    else 
     {
       tmb_var2 <- "TMB_Low"
-    }
-    else{
-      tmb_var <- "TMB_Medium"
     }
   }
   else{
@@ -100,12 +100,9 @@ for (i in 1:length(get_all_patients))
     {
       tmb_var2 <- "TMB_High"
     }
-    else if (tmb_var<=tmb_low_cutoff)
+    else 
     {
       tmb_var2 <- "TMB_Low"
-    }
-    else{
-      tmb_var2 <- "TMB_Medium"
     }
   }
   temp <- cbind(patient_id,tmb_var2,pdl1_var2)
@@ -116,3 +113,27 @@ colnames(prediction_df) <- c("patientID","TMB_Signature","PDL1_Signature")
 prediction_df$patientID <- as.character(as.vector(prediction_df$patientID))
 prediction_df$TMB_Signature <- as.character(as.vector(prediction_df$TMB_Signature))
 prediction_df$PDL1_Signature <- as.character(as.vector(prediction_df$PDL1_Signature))
+
+final_df <- NULL
+for (i in 1:nrow(prediction_df))
+{
+  if (prediction_df[i,]$TMB_Signature=="TMB_High" & prediction_df[i,]$PDL1_Signature=="PDL1_High")
+  {
+    score <- 3
+  }
+  else if (prediction_df[i,]$TMB_Signature=="TMB_Low" & prediction_df[i,]$PDL1_Signature=="PDL1_Low")
+  {
+    score <- 1
+  }
+  else{
+    score <- 2 
+  }
+  temp <- cbind(prediction_df[i,]$patientID,score)
+  final_df <- rbind(final_df,temp)
+}
+final_df <- as.data.frame(final_df)
+colnames(final_df) <- c("patientID","prediction")
+final_df$patientID <- as.character(as.vector(final_df$patientID))
+final_df$prediction <- as.numeric(as.vector(final_df$prediction))
+
+write.table(final_df,"output/predictions.csv",row.names=F,col.names=T,quote=F,sep=",")
