@@ -14,6 +14,30 @@ load("Model_building/Required_Files/revised_normalized-log2-count.RData")
 load("Model_building/Required_Files/Selelected_Path_VariousGeneIDs.RData")
 load("Model_building/Required_Files/ICR_genes.RData")
 
+get_imputed_tmb <- function(sim_matrix, clinical_df, patientID){
+  
+  #If tmb is na then impute with weighted tmb of all patients with TMB present
+  get_weights <- sim_matrix[,patientID]
+  get_weights <- sort(get_weights, decreasing = TRUE)
+  temp <- 0
+  count <- 0
+  total_weights <- 0
+  for (j in 1:length(names(get_weights)))
+  {
+    t_pID <- names(get_weights)[j]
+    t_TMB <- clinical_df[clinical_df$patientID==t_pID,]$TMB
+    if (!is.na(t_TMB))
+    {
+      temp <- temp + t_TMB*as.numeric(get_weights[j])
+      total_weights <- total_weights + as.numeric(get_weights[j])
+      count <- count+1
+    }
+    if (count==100) break;
+  }
+  tmb_var <- temp/sum(total_weights)
+  return(tmb_var)
+}
+S <- affi
 SelPaths <- list(SelPath_Symb$TMB_Proliferation, ICR_genes)
 
 resMWW <- c()
@@ -30,7 +54,7 @@ clinical_df$patientID <- as.character(as.vector(clinical_df$patientID))
 
 #Get Proliferation matrix
 prol_matrix <- normalized.log2.count[SelPath_Symb$TMB_Proliferation,]
-rbf <- rbfdot(sigma=0.5)
+rbf <- rbfdot(sigma=1.0)
 sim_matrix <- kernelMatrix(rbf,t(prol_matrix))
 
 #Get ids of all patients
@@ -45,38 +69,13 @@ for (i in 1:length(get_all_patients))
   {
     #If patient has tmb already don't do anything
     tmb_var <- clinical_df[clinical_df$patientID==patientID,]$TMB
-    
-    #If tmb is na then impute with weighted tmb of all patients with TMB present
     if (is.na(tmb_var))
     {
-      get_weights <- sim_matrix[,patientID]
-      temp <- 0
-      for (j in 1:length(names(get_weights)))
-      {
-        t_pID <- names(get_weights)[j]
-        t_TMB <- clinical_df[clinical_df$patientID==t_pID,]$TMB
-        if (!is.na(t_TMB))
-        {
-          temp <- temp + t_TMB*as.numeric(get_weights[j])
-        }
-      }
-      tmb_var <- temp/sum(get_weights)
+      tmb_var <- get_imputed_tmb(sim_matrix,clinical_df,patientID)
     }
   }
   else{
-    #Impute TMB as weighted tmb of all patients with tmb present based on distance
-    get_weights <- sim_matrix[,patientID]
-    temp <- 0
-    for (j in 1:length(names(get_weights)))
-    {
-      t_pID <- names(get_weights)[j]
-      t_TMB <- clinical_df[clinical_df$patientID==t_pID,]$TMB
-      if (!is.na(t_TMB))
-      {
-        temp <- temp + t_TMB*as.numeric(get_weights[j])
-      }
-    }
-    tmb_var <- temp/sum(get_weights)
+    tmb_var <- get_imputed_tmb(sim_matrix,clinical_df,patientID)
   }
   output <- cbind(patientID,tmb_var)
   tmb_df <- rbind(tmb_df,output)
