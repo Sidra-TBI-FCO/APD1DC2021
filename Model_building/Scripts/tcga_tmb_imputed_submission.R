@@ -5,7 +5,8 @@ suppressMessages(library(yaGST))
 suppressMessages(library(kernlab))
 
 setwd("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/")
-load("Model_building/Required_Files/NSCLC_TMB_Proliferation.Rdata")
+#load("Model_building/Required_Files/NSCLC_TMB_Proliferation.Rdata")
+load("Model_building/Required_Files/NSCLC_expression_matrix.Rdata")
 
 source("Model_building/Scripts/knn_graph.R")
 
@@ -23,24 +24,26 @@ get_imputed_tmb <- function(sim_matrix, clinical_df, patientID, k){
     t_TMB <- clinical_df[clinical_df$patientID==t_pID,]$TMB
     if (!is.na(t_TMB))
     {
-      temp <- temp + t_TMB
-      #temp <- temp + t_TMB*as.numeric(get_weights[j])
-      #total_weights <- total_weights + as.numeric(get_weights[j])
+      #temp <- temp + t_TMB
+      temp <- temp + t_TMB*as.numeric(get_weights[j])
+      total_weights <- total_weights + as.numeric(get_weights[j])
       count <- count+1
     }
     if (count==k) break;
   }
-  #tmb_var <- temp/sum(total_weights)
-  tmb_var <- temp/k
+  tmb_var <- temp/sum(total_weights)
+  #tmb_var <- temp/k
   return(tmb_var)
 }
 
+NSCLC_expression_matrix$TMB <- 2^NSCLC_expression_matrix$TMB
+NSCLC <- NSCLC_expression_matrix
 NSCLC_without_NA <- NSCLC[!is.na(NSCLC$TMB),]
 orig_NSCLC_without_NA <- NSCLC_without_NA
 N_without_NA <- nrow(NSCLC_without_NA)
 
 
-seed_ids <- sample(1:1000,10)
+seed_ids <- sample(1:1000,100)
 val_cor <- NULL
 full_cor <- NULL
 full_median_cor <- NULL
@@ -58,8 +61,8 @@ for (seed_id in seed_ids)
   NSCLC_without_NA[validation_sample_ids,]$TMB <- NA
   
   #Make similarity matrix
-  k <- 15
-  prol_matrix <- as.matrix(log2(NSCLC_without_NA[,c(1:5)]+1))
+  k <- 5
+  prol_matrix <- as.matrix(log2(NSCLC_without_NA[,c(2:ncol(NSCLC_expression_matrix))]+1))
   dist_matrix <- dist(prol_matrix)
   W <- affinity_matrix(as.matrix(dist_matrix),k)
   K <- W/rowSums(W)
@@ -69,6 +72,7 @@ for (seed_id in seed_ids)
   #Get ids of all patients
   get_all_patients <- rownames(NSCLC_without_NA)
   NSCLC_without_NA$patientID <- rownames(NSCLC_without_NA)
+  mod_NSCLC_without_NA <- NSCLC_without_NA[,c("TMB","patientID")]
   
   #Create a TMB based data frame
   tmb_df <- NULL
@@ -79,10 +83,10 @@ for (seed_id in seed_ids)
     if (patientID %in% NSCLC_without_NA$patientID)
     {
       #If patient has tmb already don't do anything
-      tmb_var <- NSCLC_without_NA[NSCLC_without_NA$patientID==patientID,]$TMB
+      tmb_var <- mod_NSCLC_without_NA[mod_NSCLC_without_NA$patientID==patientID,]$TMB
       if (is.na(tmb_var))
       {
-        tmb_var <- get_imputed_tmb(sim_matrix,NSCLC_without_NA,patientID,k)
+        tmb_var <- get_imputed_tmb(sim_matrix,mod_NSCLC_without_NA,patientID,k)
         median_tmb_var <- median_tmb
       }
       else{
@@ -90,7 +94,7 @@ for (seed_id in seed_ids)
       }
     }
     else{
-      tmb_var <- get_imputed_tmb(sim_matrix,NSCLC_without_NA,patientID,k)
+      tmb_var <- get_imputed_tmb(sim_matrix,mod_NSCLC_without_NA,patientID,k)
       median_tmb_var <- median_tmb
     }
     output <- cbind(patientID,tmb_var,median_tmb_var)
