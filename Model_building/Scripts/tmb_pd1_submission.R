@@ -122,12 +122,12 @@ for (i in 1:nrow(prediction_df))
   {
     score <- 3
   }
-  else if (prediction_df[i,]$TMB_Signature=="TMB_Low" & prediction_df[i,]$PDL1_Signature=="PDL1_Low")
+  else if (prediction_df[i,]$TMB_Signature=="TMB_High" & prediction_df[i,]$PDL1_Signature=="PDL1_Low")
   {
-    score <- 1
+    score <- 2
   }
   else{
-    score <- 2 
+    score <- 1 
   }
   temp <- cbind(prediction_df[i,]$patientID,score)
   final_df <- rbind(final_df,temp)

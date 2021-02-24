@@ -101,7 +101,7 @@ tmb_df$TMB_Imputed <- as.numeric(as.vector(tmb_df$TMB_Imputed))
 tmb_df$TMB_Imputed_Scaled <- normalize(tmb_df$TMB_Imputed)
 tmb_df$ICR <- resMWW$ICR
 
-final_df <- data.frame(patientID = tmb_df$patientID, prediction = tmb_df$TMB_Imputed_Scaled+0.2*max(tmb_df$ICR-0.5,0))
+final_df <- data.frame(patientID = tmb_df$patientID, prediction = -(tmb_df$TMB_Imputed_Scaled+tmb_df$ICR))
 final_df$patientID <- as.character(as.vector(final_df$patientID))
 final_df$prediction <- as.numeric(as.vector(final_df$prediction))
 

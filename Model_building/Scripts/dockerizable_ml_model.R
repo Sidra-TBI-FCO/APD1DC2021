@@ -11,7 +11,6 @@ suppressMessages(library(matrixStats))
 setwd("/export/cse02/rmall/AntiPD1_Challenge/APD1DC2021/")
 
 #Load the log2 normalized dataset
-#load("/data1/normalized-log2-count.RData")
 load("Model_building/Required_Files/revised_normalized-log2-count.RData")
 
 #Load normalized data
@@ -43,16 +42,15 @@ for (i in 1:ncol(output_df))
 }
 
 #Load the best models 
-#load("/data1/CV_ML_models.Rdata")
-load("Model_building/Required_Files/CV_ML_models_submission_q1_v1.Rdata")
-model_list <- list(gpFit, rfFit, rdaFit, gbmFit, svmFit, xgbFit)
-names(model_list) <- c("GP","RF","RDA","GBM","SVM", "XGB")
+load("Model_building/Required_Files/CV_ML_models_submission_q3_v3.Rdata")
+model_list <- list(gpFit, rfFit, rdaFit, gbmFit, svmFit)
+names(model_list) <- c("GP","RF","RDA","GBM","SVM")
 all_predictions <- predict(model_list, newdata = output_df[,req_columns], type="prob")
 
 get_response_info <- NULL
 for (i in 1:length(model_list))
 {
-  get_response_info <- cbind(get_response_info,all_predictions[[i]]$Response)
+  get_response_info <- cbind(get_response_info,all_predictions[[i]]$NonResponse)
 }
 get_response_info <- as.data.frame(get_response_info)
 predictions_df <- data.frame("patientID"=rownames(output_df),"prediction"=rowMedians(as.matrix(get_response_info)))
