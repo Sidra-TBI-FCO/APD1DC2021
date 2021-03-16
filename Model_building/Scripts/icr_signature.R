@@ -1,34 +1,19 @@
 #!/usr/bin/env Rscript
 
-#Use the ICR signature to make the score to be used as prediction
+# Normalizing the raw data 
 suppressMessages(library(data.table))
-suppressMessages(library(NOISeq))
-suppressMessages(library(ConsensusClusterPlus))
-suppressMessages(library(clue))
+suppressMessages(library(yaGST))
+suppressMessages(library(Miracle))
 
-# get the input rna-seq gene level count data
-print("Processing RNA-Seq data")
-#load("./Model_building/Required_Files/normalized-log2-count.RData") # gene count normalized matrix
-load("/data1/normalized-log2-count.RData")
-#load("./Model_building/Required_Files/ICR_genes.RData")
+load("/data1/revised_normalized-log2-count.RData")
 load("/data1/ICR_genes.RData")
-print("Done reading in counts")
 
-print("Computing ICR Score")
-# Subset to get ICR genes 
-ICR_subset_RNAseq = normalized.log2.count[which(rownames(normalized.log2.count) %in% ICR_genes),]
+resMWW <- c()
+for(i in 1:ncol(normalized.log2.count)){
+  resMWW <- c(resMWW,mwwGST(normalized.log2.count[,i],ICR_genes)$nes) 
+}
 
-ICR_subset_RNAseq = t(ICR_subset_RNAseq) # transpose
-print("Done computing ICR Score")
+final_df <- data.frame(patientID = colnames(normalized.log2.count), prediction = -resMWW)
 
-# calculating ICR score (row mean)
-ICR_score = rowMeans(ICR_subset_RNAseq) 
+write.table(final_df,file="/output/predictions.csv",quote=F,sep=",",row.names=F,col.names=T)
 
-icrscore_sig = data.frame("patientID" = colnames(normalized.log2.count) ,"prediction"=ICR_score)
-
-# write out ICRScore signature to prediciton file
-#write.csv(icrscore_sig, file = "./Model_building/Processed_data/predictions_ICR.csv", quote = F, row.names = F); 
-write.csv(icrscore_sig, file = "/output/predictions_ICR.csv", quote = F, row.names = F); 
-
-print("Done writing out signature")                          
-rm(ICR_subset_RNAseq,ICR_score,normalized.log2.count)
